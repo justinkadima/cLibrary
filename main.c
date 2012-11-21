@@ -14,7 +14,7 @@
 #include "refcount.h"
 #include "debug.h"
 
-//#include "template.h"
+#include "template.h"
 
 char* template="<html><head></head><body>"\
                 "<p>unu</p>"\
@@ -30,7 +30,7 @@ char* template="<html><head></head><body>"\
 
 int main (int argc, const char * argv[])
 {
-    /*    
+        
     char* art=_getTemplateBlock("articol",template);
     printf("templeta este: %s\n",art);
     
@@ -48,7 +48,7 @@ int main (int argc, const char * argv[])
     
     free(art);
     
-    */
+    
     
     
    /* list* ll=_createList();
@@ -131,12 +131,7 @@ int main (int argc, const char * argv[])
     */
         
     
-    FILE * pFile;
-    pFile = fopen ("unexist.ent","r");
-    if (pFile == NULL)
-    {
-        __warning("blavla");
-    }
+    
     return 0;
 }
 
