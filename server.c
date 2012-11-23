@@ -50,9 +50,12 @@ void* reqHandler(enum mg_event event,struct mg_connection *conn)
   		{
   			char* getp=_get_GetParam("p",request_info);
   			
+            mg_printf(conn,"HTTP/1.0 200 OK\r\n Content-Type: text/html\r\n\r\n ");
+            
   			if(getp!=NULL)
   			{
-  				mg_printf(conn,"HTTP/1.0 200 OK\r\n Content-Type: text/html\r\n\r\n Get Param: %s \n",getp);
+  				mg_printf(conn,"Get Param: %s \n",getp);
+                
   			}
   			
   			free(getp);

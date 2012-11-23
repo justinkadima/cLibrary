@@ -26,8 +26,10 @@ typedef enum
 
 
 #define __info(mes,...) debug(__FILE__,__LINE__,Info,mes,__VA_ARGS__)
-#define __warning(mes,...) debug(__FILE__,__LINE__,Warning,mes,__VA_ARGS__)
+
 #define __fatal(mes,...) debug(__FILE__,__LINE__,Fatal,mes,__VA_ARGS__)
+
+#define __warn(mes,...) debug(__FILE__,__LINE__,Warning,mes,__VA_ARGS__)
 
 void debug(char* file,int line,DebugLevel level,char *mes,...);
 
