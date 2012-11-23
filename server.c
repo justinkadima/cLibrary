@@ -3,6 +3,7 @@
 #include<stdlib.h>
 
 #include "mongoose.h"
+#include "template.h"
 
 
 
@@ -46,21 +47,49 @@ void* reqHandler(enum mg_event event,struct mg_connection *conn)
 
   	if (event == MG_NEW_REQUEST) 
   	{
-  		if(strcmp(request_info->uri,"/admin")==0)
+  		if(strcmp(request_info->uri,"/template")==0)
   		{
-  			char* getp=_get_GetParam("p",request_info);
+  			
   			
             mg_printf(conn,"HTTP/1.0 200 OK\r\n Content-Type: text/html\r\n\r\n ");
             
-  			if(getp!=NULL)
+            char* template="<html><head></head><body>"\
+            "<p>unu</p>"\
+            "#articol[["\
+            "<h1>#[title]</h1>"\
+            "<h2>#[pass]</h2>"\
+            "<h3>#[title]</h3>"\
+            "]]"\
+            "</body></html>";
+
+            char* art=_getTemplateBlock("articol",template);
+            
+  			char* old=art;
+            int x=_processTemplateTag("title","ALOHA",&art);
+            x=_processTemplateTag("pass","PAROLA", &art);
+            
+            mg_printf(conn,"%s",art);
+            
+            if(x>0)free(old);
+            free(art);
+            
+  			return ret;
+  		}
+        
+        if(strcmp(request_info->uri,"/get")==0)
+        {
+            char* usr=_get_GetParam("user",request_info);
+  			
+            mg_printf(conn,"HTTP/1.0 200 OK\r\n Content-Type: text/html\r\n\r\n ");
+            if(usr!=NULL)
   			{
-  				mg_printf(conn,"Get Param: %s \n",getp);
+  				mg_printf(conn,"User Param: %s \n",usr);
                 
   			}
   			
-  			free(getp);
+  			free(usr);
   			return ret;
-  		}
+        }
   		
   		return NULL;	
   	}
