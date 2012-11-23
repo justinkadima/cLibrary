@@ -6,8 +6,15 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+
 #ifndef DEBUG_H
 #define DEBUG_H
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<stdarg.h>
+#include<string.h>
 
 typedef enum
 {
@@ -18,11 +25,11 @@ typedef enum
 }DebugLevel;
 
 
-#define __info(mes) debug(__FILE__,__LINE__,Info,mes)
-#define __warning(mes) debug(__FILE__,__LINE__,Warning,mes)
-#define __fatal(mes) debug(__FILE__,__LINE__,Fatal,mes)
+#define __info(mes,...) debug(__FILE__,__LINE__,Info,mes,__VA_ARGS__)
+#define __warning(mes,...) debug(__FILE__,__LINE__,Warning,mes,__VA_ARGS__)
+#define __fatal(mes,...) debug(__FILE__,__LINE__,Fatal,mes,__VA_ARGS__)
 
-void debug(char* file,int line,DebugLevel level,char *mes);
+void debug(char* file,int line,DebugLevel level,char *mes,...);
 
 
 #endif

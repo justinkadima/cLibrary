@@ -4,24 +4,27 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 
 #include "debug.h"
 
 
-void debug(char* file,int line,DebugLevel level,char *mes)
+void debug(char* file,int line,DebugLevel level,char *mes,...)
 {
     
+    char buf[256];
+	
+	va_list args;
+    va_start (args, mes);
+    vsprintf (buf,mes, args);
+    va_end (args);
+
     switch(level)
     {
         case Info:
-            fprintf(stderr, "INFO: %s FILE: %s LINE: %i\n",mes,file,line);
+            fprintf(stderr, "INFO: %s FILE: %s LINE: %i\n",buf,file,line);
             break;
         case Warning:
-            fprintf(stderr, "WARNING: %s FILE: %s LINE: %i ERROR: %s\n",mes,file,line,strerror(errno));
+            fprintf(stderr, "WARNING: %s FILE: %s LINE: %i ERROR: %s\n",buf,file,line,strerror(errno));
             
 #if defined(DEBUG)
             
@@ -47,7 +50,7 @@ void debug(char* file,int line,DebugLevel level,char *mes)
             
             break;
         case Fatal:
-            fprintf(stderr, "FATAL: %s FILE: %s LINE: %i ERROR: %s\n",mes,file,line,strerror(errno));
+            fprintf(stderr, "FATAL: %s FILE: %s LINE: %i ERROR: %s\n",buf,file,line,strerror(errno));
             fprintf(stderr,"Will abord...\n");
             exit(EXIT_FAILURE);
             break;
