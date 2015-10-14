@@ -1,17 +1,11 @@
-//
-//  refcount.c
-//  glututor1
-//
-//  Created by Macbook White on 11/19/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "refcount.h"
 
-void* Alloc(size_t size)
+void* RC_Alloc(size_t size)
 {
     RefObject* obj=(RefObject*)calloc(1,sizeof(RefObject)+size);
     if(obj==NULL)return NULL;
@@ -26,7 +20,7 @@ void* Alloc(size_t size)
 }
 
 
-void* Retain(void *obj)
+void* RC_Retain(void *obj)
 {
     if(obj==NULL) return NULL;
     
@@ -44,7 +38,7 @@ void* Retain(void *obj)
 }
 
 
-void Release(void *obj)
+void RC_Release(void *obj)
 {
     if(obj==NULL) return;
     
@@ -65,7 +59,7 @@ void Release(void *obj)
     
 }
 
-unsigned int getRetainCount(void *obj)
+unsigned int RC_GetRetainCount(void *obj)
 {
     if(obj==NULL) return 0;
     
