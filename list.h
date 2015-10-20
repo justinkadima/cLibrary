@@ -1,17 +1,12 @@
-//
-//  list.h
-//  glututor1
-//
-//  Created by Macbook White on 11/9/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #ifndef LIST_H
 #define LIST_H
 
+#include<stdbool.h>
+
+typedef int (*listFuncCompare)(void*,void*);
+typedef void (*listFuncTraverse)(void*);
 
 
-typedef int (*fcompare)(void* ,void*);
 
 typedef struct _listItem
 {
@@ -23,16 +18,16 @@ typedef struct _listItem
 
 
 
-typedef struct _list
+typedef struct
 {
     listItem* head;
     listItem* tail;
     int size;
-    fcompare compare;
+    listFuncCompare compare;
     
 }list;
 
-typedef enum _listDir
+typedef enum
 {
     HEAD=1,
     TAIL=2
@@ -40,20 +35,21 @@ typedef enum _listDir
 
 
 
-list* _createList(void);
 
-listItem* _addItem(void* val,listDir idir,list** lista);
+list* List_Init(listFuncCompare fcomp);
 
-listItem* findItem(void* val,list* lista);
+listItem* List_PushItem(list* lista,listDir idir,void* val);
 
-void deleteItem(listItem* item,list* lista);
+listItem* List_FindItem(list* lista,void* val);
 
-void popItem(listDir dir,list* lista);
+bool List_DeleteItem(list* lista,void* val,bool freedata);
+
+void List_Delete(list** lista,bool freedata);
 
 
-void deleteList(list** lista);
+bool List_PopItem(list* lista,listDir dir,bool freedata);
 
-int strcompare(void* s1,void* s2);
+void List_Traverse(list* lista,listDir startFrom,listFuncTraverse traverseFunc);
 
 
 
