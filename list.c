@@ -1,11 +1,3 @@
-//
-//  list.c
-//  glututor1
-//
-//  Created by Macbook White on 11/9/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,7 +8,7 @@
 
 
 
-list* _createList(void)
+list* List_Init(listFuncCompare fcomp)
 {
     list* lista=(list*)calloc(1,sizeof(list));
     if(lista==NULL)return NULL;
@@ -24,16 +16,16 @@ list* _createList(void)
     lista->head=NULL;
     lista->tail=NULL;
     lista->size=0;
-    lista->compare=NULL;
+    lista->compare=fcomp;
     
     return lista;
     
 }
 
 
-listItem* _addItem(void* val,listDir idir,list** lista)
+listItem* List_PushItem(list* lista,listDir idir,void* val)
 {
-    if(*lista==NULL || val==NULL)return NULL;
+    if(lista==NULL || val==NULL)return NULL;
     listItem* item=(listItem*)calloc(1,sizeof(listItem));
     if(item==NULL) return NULL;
     
@@ -42,9 +34,9 @@ listItem* _addItem(void* val,listDir idir,list** lista)
     item->data=val;
     
     
-    if((*lista)->head==NULL)
+    if(lista->head==NULL)
     {
-        (*lista)->tail=(*lista)->head=item;
+        lista->tail=lista->head=item;
         
     }
     else
@@ -54,23 +46,23 @@ listItem* _addItem(void* val,listDir idir,list** lista)
         
                 if(idir==HEAD)
                 {
-                    tmp=(*lista)->head;
+                    tmp=lista->head;
                     item->prev=tmp;
                     tmp->next=item;
-                    (*lista)->head=item;
+                    lista->head=item;
                 }
                 else
                 {
-                    tmp=(*lista)->tail;
+                    tmp=lista->tail;
                     item->next=tmp;
                     tmp->prev=item;
-                    (*lista)->tail=item;
+                    lista->tail=item;
                     
                 }
         
     }
     
-    (*lista)->size++;
+    lista->size++;
     
     return item;
     
@@ -78,7 +70,7 @@ listItem* _addItem(void* val,listDir idir,list** lista)
 
 
 
-listItem* findItem(void* val,list* lista)
+listItem* List_FindItem(list* lista,void* val)
 {
     if(val ==NULL || lista==NULL || lista->compare==NULL) return NULL;
     
@@ -95,44 +87,48 @@ listItem* findItem(void* val,list* lista)
     return NULL;
     
 }
-void deleteItem(listItem* item,list* lista)
+
+bool List_DeleteItem(list* lista,void* val,bool freedata)
 {
-    if(item==NULL || lista==NULL)return;
+    if(!lista)return false;
     
-    listItem* found=findItem(item->data, lista);
+    listItem* found=List_FindItem( lista,val);
     if(found!=NULL)
     {
         listItem* tmp=NULL;
         
         if(found==lista->head)
         {
-            popItem(HEAD, lista);
+            return List_PopItem(lista,HEAD,freedata);
         }
         if(found==lista->tail)
         {
-            popItem(TAIL, lista);
+            return List_PopItem(lista,TAIL,freedata);
         }
         
         tmp=found->prev;
-        tmp->next=found->next;
+        if(tmp)tmp->next=found->next;
         
         tmp=found->next;
-        tmp->prev=found->prev;
+        if(tmp)tmp->prev=found->prev;
         
+        if(freedata)free(found->data);
         free(found);
+        
         lista->size--;
         
-        
+        return true;
     }
+    return false;
     
 }
 
 
 
-void popItem(listDir dir,list* lista)
+bool List_PopItem(list* lista,listDir dir,bool freedata)
 {
     
-    if(lista==NULL)return;
+    if(lista==NULL)return false;
     
     listItem* item=NULL;
     listItem* tmp=NULL;
@@ -141,28 +137,78 @@ void popItem(listDir dir,list* lista)
     {
         case HEAD:
             item=lista->head;
-            tmp=item->prev;
-            tmp->next=NULL;
-            lista->head=tmp;
-            free(item);
-            lista->size--;
+            if(item)
+            {
+                tmp=item->prev;
+                if(tmp)tmp->next=NULL;
+                lista->head=tmp;
+                if(freedata)free(item->data);
+                free(item);
+                lista->size--;
+                return true;
+            }
             
             break;
             
         case TAIL:
             item=lista->tail;
-            tmp=item->next;
-            tmp->prev=NULL;
-            lista->tail=tmp;
-            free(item);
-            lista->size--;
+            if(item)
+            {
+                tmp=item->next;
+                if(tmp)tmp->prev=NULL;
+                lista->tail=tmp;
+                if(freedata)free(item->data);
+                free(item);
+                lista->size--;
+                return true;
+            }
             
             break;
             
     }
+    return false;
 }
 
-void deleteList(list** lista)
+
+
+void List_Traverse(list* lista,listDir startFrom,listFuncTraverse traverseFunc)
+{
+    
+    if(!lista)return;
+    listItem* item=NULL;
+   
+    switch(startFrom)
+    {
+        
+        case HEAD:
+        
+           item=lista->head;
+           
+           
+           while(item)
+           {
+               traverseFunc(item->data);
+               item=item->prev;
+           }
+        
+        break;
+        case TAIL:
+        
+            item=lista->tail;
+           
+           while(item)
+           {
+               traverseFunc(item->data);
+               item=item->next;
+           }
+        
+        break;
+    }
+}
+
+
+
+void List_Delete(list** lista,bool freedata)
 {
     listItem* tmp=(*lista)->head;
     
@@ -174,8 +220,11 @@ void deleteList(list** lista)
             nn->next=NULL;
             
         }
-        //printf("Stergere: %s\n",(char*)tmp->data);
-        free(tmp->data);
+       
+        if(freedata)
+        {
+            free(tmp->data);
+        }
         free(tmp);
         tmp=nn;
         (*lista)->size--;
@@ -187,9 +236,3 @@ void deleteList(list** lista)
     
 }
 
-int strcompare(void* s1,void* s2)
-{
-    printf("%s - %s \n",(char*)s1,(char*)s2);
-    if(strcmp((char*)s1,(char*)s2)==0)return 1;
-    return 0;
-}
