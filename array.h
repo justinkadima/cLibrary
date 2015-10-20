@@ -13,7 +13,7 @@ typedef struct
 }array;
 
 
-array* darray_create(int nritems,size_t itemsize);
+array* array_create(int nritems,size_t itemsize);
 void array_free(array** ar);
 int array_expand(array* ar);
 int array_insert(array* ar, void* item);
