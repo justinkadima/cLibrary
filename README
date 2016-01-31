@@ -1,2 +1,2 @@
 Some C data structures: list, dynamic array,binary tree,hash map
-Also some reference counting functions like the ones found in Objective-C
+Also a memory pool and some reference counting functions like the ones found in Objective-C
