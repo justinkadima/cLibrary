@@ -42,11 +42,5 @@ void   BTree_Delete(btree** tree);
 
 
 
-static bool findInsertionNode(btree* tree,node** root, void* val);
-static node* searchNode(btree* tree,node* root,void* val);
-static node* findMinNode(node* top);
-static node* findMaxNode(node* top);
-static node* deleteBtreeNode(btree* tree,node* root,void* val);
-static void deleteBtreeNodes(node** root);
 
 #endif
