@@ -1,22 +1,22 @@
-#include"array.h"
+#include"vector.h"
 
 
 /**
- * Creates an array
- * @param initial item capacity
- * @itemsize the size of an item
- * @return the created array
+ * Creates a vector as a dinamic array structure
+ * @param nritems initial item capacity
+ * @param itemsize the size of an item
+ * @return the created vector
  */ 
 
-array* array_create(int nritems,size_t itemsize)
+vector* vector_create(int nritems,size_t itemsize)
 {
     if(!itemsize)return NULL;
     
-    array* ar=malloc(sizeof(array));
+    vector* ar=malloc(sizeof(vector));
     
     if(!ar)
     {
-        perror("Unable to allocate memmory for array");
+        perror("Unable to allocate memmory for vector");
         return NULL;
     }
     
@@ -43,10 +43,10 @@ array* array_create(int nritems,size_t itemsize)
 
 
 /**
- *It clear the memmory allocated for the array
- * @param ar the array
+ *It clear the memmory allocated for the vector
+ * @param ar the vector
  */
-void array_free(array** ar)
+void vector_free(vector** ar)
 {
     if(*ar)
     {
@@ -58,12 +58,12 @@ void array_free(array** ar)
 
 
 /**
- * It expands the internal capacity of the array to double the size
- * @param ar the array
+ * It expands the internal capacity of the vector to double the size
+ * @param ar the vector
  * @return 1 if successful 0 if not
  */
 
-int array_expand(array* ar)
+int vector_expand(vector* ar)
 {
     if(ar)
     {
@@ -77,29 +77,30 @@ int array_expand(array* ar)
         }
         else
         {
-            perror("Unable to expand the array");
+            perror("Unable to expand the vector");
             return 0;
         }
         
     }
+    return 0;
 }
 
 
 /**
- * Inserts a value into the array.it does expand the array if neccesary.
- * @param ar is the array
+ * Inserts a value into the vector.it does expand the vector if neccesary.
+ * @param ar is the vector
  * @param item is the data 
  * @return 1 in case of success and 0 if there is an error
  */
  
  
-int array_insert(array* ar, void* item)
+int vector_insert(vector* ar, void* item)
 {
     if(ar && item)
     {
         if(ar->size>=ar->internal_capacity)
         {
-            if(!array_expand(ar))
+            if(!vector_expand(ar))
             {
                 return 0;
             }
@@ -117,14 +118,14 @@ int array_insert(array* ar, void* item)
 
 
 /**
- * Retrive a vallue from the array
- * @param ar  is the array
+ * Retrive a vallue from the vector
+ * @param ar  is the vector
  * @param idx is the index of the item that needs to be retrieved
  * @return if found it returns the item if not then NULL
  */
  
 
-void* array_get(array* ar,unsigned int idx)
+void* vector_get(vector* ar,unsigned int idx)
 {
     
     if(ar)
@@ -141,15 +142,15 @@ void* array_get(array* ar,unsigned int idx)
 
 
 /**
- * Updates one item in the array (beaware to free the returned data if requiered)
- * @param ar the array
- * @param idx is the index in the array
+ * Updates one item in the vector (beaware to free the returned data if requiered)
+ * @param ar the vector
+ * @param idx is the index in the vector
  * @param val is the new value
  * @return  the old value or NULL in case of error
  */
 
 
-void* array_update(array* ar,unsigned int idx,void* val)
+void* vector_update(vector* ar,unsigned int idx,void* val)
 {
     if(ar && val)
     {
@@ -166,12 +167,12 @@ void* array_update(array* ar,unsigned int idx,void* val)
 
 
 /**
- * It removes the item at a specific index in the array
- * @param ar the array
+ * It removes the item at a specific index in the vector
+ * @param ar the vector
  * @param idx is the index
  * @return the old data ( in case it needs to be set free) or NULL in case of error
  */ 
-void* array_remove(array* ar, unsigned int idx)
+void* vector_remove(vector* ar, unsigned int idx)
 {
     
     void* ret=NULL;
