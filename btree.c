@@ -3,6 +3,14 @@
 #include"btree.h"
 
 
+static bool findInsertionNode(btree* tree,node** root, void* val);
+static node* searchNode(btree* tree,node* root,void* val);
+static node* findMinNode(node* top);
+static node* findMaxNode(node* top);
+static node* deleteBtreeNode(btree* tree,node* root,void* val);
+static void deleteBtreeNodes(node** root);
+
+
 btree* BTree_Init(btreeFuncCompare cFunc)
 {
     btree* tree=(btree*)malloc(sizeof(btree));
@@ -16,6 +24,7 @@ btree* BTree_Init(btreeFuncCompare cFunc)
     tree->root=NULL;
     tree->nrNodes=0;
     tree->compareFunc=cFunc;
+    return tree;
     
 }
 
