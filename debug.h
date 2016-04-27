@@ -1,10 +1,3 @@
-//
-//  debug.h
-//  glututor1
-//
-//  Created by Macbook White on 11/21/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
 
 
 #ifndef DEBUG_H
