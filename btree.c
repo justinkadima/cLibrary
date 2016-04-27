@@ -85,7 +85,7 @@ static bool findInsertionNode(btree* tree,node** root, void* val)
 		}
 	}
     
-    
+	return false;    
 }
 
 
@@ -166,6 +166,7 @@ static node* searchNode(btree* tree,node* root,void* val)
 			return searchNode(tree,root->right,val);
 		}
 	}
+	return NULL;
 }
 
 
