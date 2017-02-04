@@ -3,17 +3,20 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
+
+typedef void (*free_fp)(void**);
 
 typedef struct
 {
     void** data;
     int size;
     int internal_capacity;
-    size_t item_size;
+    free_fp freeFunc;
 }vector;
 
 
-vector* vector_create(int nritems,size_t itemsize);
+vector* vector_create(int nritems,free_fp freefunc);
 void vector_free(vector** ar);
 int vector_expand(vector* ar);
 int vector_insert(vector* ar, void* item);
