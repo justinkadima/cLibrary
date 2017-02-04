@@ -4,14 +4,12 @@
 /**
  * Creates a vector as a dinamic array structure
  * @param nritems initial item capacity
- * @param itemsize the size of an item
+ * @param free_fp a pointer for a custom free function called for every item in vector
  * @return the created vector
  */ 
 
-vector* vector_create(int nritems,size_t itemsize)
+vector* vector_create(int nritems,free_fp freefunc)
 {
-    if(!itemsize)return NULL;
-    
     vector* ar=malloc(sizeof(vector));
     
     if(!ar)
@@ -20,19 +18,17 @@ vector* vector_create(int nritems,size_t itemsize)
         return NULL;
     }
     
-    ar->size=0;
-    if(!nritems)
-    {
-        nritems=10; //default
-    }
+    if(!nritems) nritems=10; //default
     
+    ar->size=0;
     ar->internal_capacity=nritems;
-    ar->item_size=itemsize;
-    ar->data=malloc(ar->internal_capacity*ar->item_size);
+    ar->freeFunc=freefunc;
+    ar->data=(void**)malloc(ar->internal_capacity * sizeof(void*));
+    
     if(!ar->data)
     {
         free(ar);
-        perror("Unable to allocate memmory!");
+        perror("Unable to allocate vector memory!");
         return NULL;
     }
     
@@ -48,11 +44,22 @@ vector* vector_create(int nritems,size_t itemsize)
  */
 void vector_free(vector** ar)
 {
-    if(*ar)
+    vector* vec=*ar;
+    if(vec)
     {
-        free((*ar)->data);
-        free(*ar);
-        *ar=NULL;
+        if(vec->freeFunc)
+        {
+           for(unsigned int x=0;x<vec->size;x++)
+           {
+               vec->freeFunc(&vec->data[x]);
+
+           }
+        }
+       
+        free(vec->data);
+        free(vec);
+        vec=NULL;
+            
     }
 }
 
@@ -67,7 +74,7 @@ int vector_expand(vector* ar)
 {
     if(ar)
     {
-        void** temp=(void**)realloc(ar->data,ar->internal_capacity*ar->item_size*2);
+        void** temp=(void**)realloc(ar->data,ar->internal_capacity*2);
         if(temp!=NULL)
         {
             
@@ -142,7 +149,7 @@ void* vector_get(vector* ar,unsigned int idx)
 
 
 /**
- * Updates one item in the vector (beaware to free the returned data if requiered)
+ * Updates one item in the vector (beware to free the returned data if requiered)
  * @param ar the vector
  * @param idx is the index in the vector
  * @param val is the new value
@@ -156,8 +163,8 @@ void* vector_update(vector* ar,unsigned int idx,void* val)
     {
         if(idx<ar->size)
         {
-            void* temp=ar->data[idx];
-            ar->data[idx]=val;
+             void* temp=ar->data[idx];
+             ar->data[idx]=val;
             return temp;
         }
     }
@@ -170,46 +177,40 @@ void* vector_update(vector* ar,unsigned int idx,void* val)
  * It removes the item at a specific index in the vector
  * @param ar the vector
  * @param idx is the index
- * @return the old data ( in case it needs to be set free) or NULL in case of error
+ * @return pointer to old data
  */ 
 void* vector_remove(vector* ar, unsigned int idx)
 {
     
-    void* ret=NULL;
+    void* ret;
     
     if(ar)
     {
-        int temp=idx;
-        while(1)
+        if(idx>=ar->size || idx<0)
         {
-            if(temp>=ar->size)
-            {
-                
-                break;
-            }
+            perror("unable to remove item pass boundaries");
+            return NULL;
+        }        
+        ret=ar->data[idx];
+        
+        while(idx<ar->size-1)
+        {
             
-            temp++;
+            ar->data[idx]=ar->data[idx+1];
+            idx++;
+         
+        }
+        
+        ar->data[idx]=NULL;
+        ar->size--;
+        
+        if(ar->freeFunc)
+        {
+            ar->freeFunc(&ret);
+            ret=NULL;
             
-            ret=ar->data[temp-1];
-            
-            if(temp>=ar->size)
-            {
-                
-                ar->data[temp-1]=NULL;
-            }
-            else
-            {
-                ar->data[temp-1]=ar->data[temp];
-            }
-            
-           
         }
        
-        if(ret)
-        {
-            ar->size--;
-           
-        }
     
     }
     return ret;
