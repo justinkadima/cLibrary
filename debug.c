@@ -1,14 +1,27 @@
-//
-//  debug.c
-//
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "debug.h"
 
+#if defined(__unix__) || defined(__unix)
 
-void debug(char* file,int line,DebugLevel level,char *mes,...)
+    #define COLOR_RED "\x1b[31m" 
+    #define COLOR_GREEN   "\x1b[32m"
+    #define COLOR_YELLOW  "\x1b[33m"
+    #define COLOR_END "\x1b[0m" 
+
+#else
+
+    #define COLOR_RED "" 
+    #define COLOR_GREEN   ""
+    #define COLOR_YELLOW  ""
+    #define COLOR_END "" 
+
+#endif
+
+
+
+
+void __warn();
+
+void __debug(char* file,int line,DebugLevel level,char *mes,...)
 {
     
     char buf[256];
@@ -21,36 +34,14 @@ void debug(char* file,int line,DebugLevel level,char *mes,...)
     switch(level)
     {
         case Info:
-            fprintf(stderr, "INFO: %s FILE: %s LINE: %i\n",buf,file,line);
+            fprintf(stderr, "%s INFO: %s FILE: %s LINE: %i %s\n",COLOR_GREEN,buf,file,line,COLOR_END);
             break;
         case Warning:
-            fprintf(stderr, "WARNING: %s FILE: %s LINE: %i ERROR: %s\n",buf,file,line,strerror(errno));
-            
-#if defined(DEBUG)
-            
-            fprintf(stderr,"Continue(y/n)?\n");
-            while(1)
-            {
-                char key=getchar();
-                
-                if(key=='n')
-                {
-                    fprintf(stderr,"Will abord...\n");
-                    exit(EXIT_FAILURE);
-                }
-                if(key=='y')
-                {
-                    fprintf(stderr, "Will continue..\n");
-                    break;
-                }
-                
-            }
-            
-#endif
-            
+            fprintf(stderr, "%s WARNING: %s FILE: %s LINE: %i %s\n",COLOR_YELLOW,buf,file,line,COLOR_END);
+            __warn();
             break;
         case Fatal:
-            fprintf(stderr, "FATAL: %s FILE: %s LINE: %i ERROR: %s\n",buf,file,line,strerror(errno));
+            fprintf(stderr, " %s FATAL: %s FILE: %s LINE: %i %s\n",COLOR_RED,buf,file,line,COLOR_END);
             fprintf(stderr,"Will abord...\n");
             exit(EXIT_FAILURE);
             break;
@@ -59,3 +50,37 @@ void debug(char* file,int line,DebugLevel level,char *mes,...)
     }
     
 }
+
+void __warn(){
+
+    #if defined(DEBUG_WARN)
+            
+            fprintf(stderr,"Continue(y/n)?\n");
+            while(1)
+            {
+                char key=getchar();
+                
+                if(key=='n')
+                {
+                    fprintf(stderr,"abording...\n");
+                    exit(EXIT_FAILURE);
+                }
+                if(key=='y')
+                {
+                    fprintf(stderr, "continuing..\n");
+                    break;
+                }
+                
+            }
+            
+    #endif
+}
+
+int __check(char* file, int line,int condition){
+    if(!condition){
+         fprintf(stderr, "%s CHECK FAILLED: FILE: %s LINE: %i %s\n",COLOR_YELLOW,file,line,COLOR_END);
+         __warn();
+    }
+    return condition;
+}
+
